@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/etGroupName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nhập nhóm giao dịch muốn thêm"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <Button
+            android:id="@+id/btn_saveGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Lưu">
+        </Button>
+
+        <Button
+            android:id="@+id/btn_cancelGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Huỷ">
+        </Button>
+    </LinearLayout>
+</LinearLayout>

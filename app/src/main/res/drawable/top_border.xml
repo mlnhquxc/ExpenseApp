@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Shadow Line at the top -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/black"/>
+            <size android:height="4dp"/> <!-- Đ...ộ dày của line m...à bạn... muố...n -->
+        </shape>
+    </item>
+    <!-- Background color of the LinearLayout -->
+    <item android:top="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/white"/> <!-- ...M...àu... của ...background layout -->
+        </shape>
+    </item>
+</layer-list>
