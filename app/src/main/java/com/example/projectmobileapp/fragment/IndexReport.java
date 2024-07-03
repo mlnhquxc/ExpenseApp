@@ -56,30 +56,55 @@ public class IndexReport extends Fragment {
 
         List<ListTransaction> list= new ArrayList<>();
         String username = sharedPreferences.getString("currentUsername", "");
-//        switch (date) {
-//            case 0:
-//
-//                break;
-//            case 1:
-//
-//                break;
-//            case 2:
-//
-//                break;
-//            default:
-//
-//                break;
-//        }
-        for (String dateText:databaseHelper.getTransactionDayList(username)) {
-            String[] dateParts = dateText.split("-");
-            int year = Integer.parseInt(dateParts[0]);
-            int month = Integer.parseInt(dateParts[1]);
-            int day = Integer.parseInt(dateParts[2]);
-            List<Transactions> listTransaction = databaseHelper.getTransactionListByDay(username,day,month,year);
-            ListTransactionByDay listTransactionByDay = new ListTransactionByDay(day,month,year,listTransaction);
-            list.add(listTransactionByDay);
+        switch (date) {
+            case 0:
+                for (String dateText:databaseHelper.getTransactionDayListByWeek(username)) {
+                    String[] dateParts = dateText.split("-");
+                    int year = Integer.parseInt(dateParts[0]);
+                    int month = Integer.parseInt(dateParts[1]);
+                    int day = Integer.parseInt(dateParts[2]);
+                    List<Transactions> listTransaction = databaseHelper.getTransactionListByDay(username,day,month,year);
+                    ListTransactionByDay listTransactionByDay = new ListTransactionByDay(day,month,year,listTransaction);
+                    list.add(listTransactionByDay);
+                }
+                break;
+            case 1:
+                for (String dateText:databaseHelper.getTransactionDayListByMonth(username)) {
+                    String[] dateParts = dateText.split("-");
+                    int year = Integer.parseInt(dateParts[0]);
+                    int month = Integer.parseInt(dateParts[1]);
+                    int day = Integer.parseInt(dateParts[2]);
+                    List<Transactions> listTransaction = databaseHelper.getTransactionListByDay(username,day,month,year);
+                    ListTransactionByDay listTransactionByDay = new ListTransactionByDay(day,month,year,listTransaction);
+                    list.add(listTransactionByDay);
+                }
 
+                break;
+            case 2:
+                for (String dateText:databaseHelper.getTransactionDayListByYear(username)) {
+                    String[] dateParts = dateText.split("-");
+                    int year = Integer.parseInt(dateParts[0]);
+                    int month = Integer.parseInt(dateParts[1]);
+                    int day = Integer.parseInt(dateParts[2]);
+                    List<Transactions> listTransaction = databaseHelper.getTransactionListByDay(username,day,month,year);
+                    ListTransactionByDay listTransactionByDay = new ListTransactionByDay(day,month,year,listTransaction);
+                    list.add(listTransactionByDay);
+                }
+                break;
+
+            default:
+                for (String dateText:databaseHelper.getTransactionDayListByWeek(username)) {
+                    String[] dateParts = dateText.split("-");
+                    int year = Integer.parseInt(dateParts[0]);
+                    int month = Integer.parseInt(dateParts[1]);
+                    int day = Integer.parseInt(dateParts[2]);
+                    List<Transactions> listTransaction = databaseHelper.getTransactionListByDay(username,day,month,year);
+                    ListTransactionByDay listTransactionByDay = new ListTransactionByDay(day,month,year,listTransaction);
+                    list.add(listTransactionByDay);
+                }
+                break;
         }
+
 
         statisticalListDateAdapter = new StatisticalListDateAdapter(list);
 

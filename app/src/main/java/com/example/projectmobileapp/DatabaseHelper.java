@@ -11,7 +11,9 @@ import androidx.annotation.Nullable;
 import com.example.projectmobileapp.model.TransactionGroups;
 import com.example.projectmobileapp.model.Transactions;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -277,8 +279,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<String> getTransactionDayListByWeek(String username) {
         List<String> list = new ArrayList<>();
         SQLiteDatabase myDB = this.getWritableDatabase();
+        Calendar calendar = Calendar.getInstance();
+        int yearS,monthS, dayS;
+        int yearE = calendar.get(Calendar.YEAR);
+        int monthE = calendar.get(Calendar.MONTH)+1;
+        int dayE = calendar.get(Calendar.DAY_OF_WEEK)-1;
+        dayS = dayE-7;
+        yearS = yearE;
+        monthS = monthE;
+        if (dayS<1){
+            monthS = monthE-1;
+            if (monthS<1){
+                monthS +=12;
+                yearS = yearE-1;
+            }
+            YearMonth yearMonthObject = null;
+            int daysInMonth =0;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                yearMonthObject = YearMonth.of(yearS, monthS);
+                daysInMonth = yearMonthObject.lengthOfMonth();
+            }
+            dayS+= daysInMonth;
+        }
 
-        Cursor cursor = myDB.rawQuery("select TransactionDate from Transactions where Username = ? ORDER BY TransactionDate DESC", new String[]{username});
+        String dateS = formatDate(dayS, monthS, yearS);
+        String dateE = formatDate(dayE, monthE, yearE);
+
+
+        Cursor cursor = myDB.rawQuery("select TransactionDate from Transactions where Username = ? AND TransactionDate Between ? And ? ORDER BY TransactionDate DESC", new String[]{username,dateS,dateE});
         if (cursor.moveToFirst()) {
             do {
                 String dateStr = cursor.getString(cursor.getColumnIndexOrThrow("TransactionDate"));
@@ -289,6 +317,69 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return list;
     }
+
+    public List<String> getTransactionDayListByMonth(String username) {
+        List<String> list = new ArrayList<>();
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        Calendar calendar = Calendar.getInstance();
+        int yearS,monthS, dayS;
+        int yearE = calendar.get(Calendar.YEAR);
+        int monthE = calendar.get(Calendar.MONTH)+1;
+        int dayE = calendar.get(Calendar.DAY_OF_WEEK)-1;
+        dayS = dayE;
+        yearS = yearE;
+        monthS = monthE-1;
+        if (monthS<1){
+            monthS +=12;
+            yearS = yearE-1;
+        }
+
+        String dateS = formatDate(dayS, monthS, yearS);
+        String dateE = formatDate(dayE, monthE, yearE);
+
+
+        Cursor cursor = myDB.rawQuery("select TransactionDate from Transactions where Username = ? AND TransactionDate Between ? And ? ORDER BY TransactionDate DESC", new String[]{username,dateS,dateE});
+        if (cursor.moveToFirst()) {
+            do {
+                String dateStr = cursor.getString(cursor.getColumnIndexOrThrow("TransactionDate"));
+                list.add(dateStr);
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public List<String> getTransactionDayListByYear(String username) {
+        List<String> list = new ArrayList<>();
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        Calendar calendar = Calendar.getInstance();
+        int yearS,monthS, dayS;
+        int yearE = calendar.get(Calendar.YEAR);
+        int monthE = calendar.get(Calendar.MONTH)+1;
+        int dayE = calendar.get(Calendar.DAY_OF_WEEK)-1;
+        dayS = dayE;
+        yearS = yearE-1;
+        monthS = monthE;
+
+
+        String dateS = formatDate(dayS, monthS, yearS);
+        String dateE = formatDate(dayE, monthE, yearE);
+
+
+        Cursor cursor = myDB.rawQuery("select TransactionDate from Transactions where Username = ? AND TransactionDate Between ? And ? ORDER BY TransactionDate DESC", new String[]{username,dateS,dateE});
+        if (cursor.moveToFirst()) {
+            do {
+                String dateStr = cursor.getString(cursor.getColumnIndexOrThrow("TransactionDate"));
+                list.add(dateStr);
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
+
 
     public List<String> getTransactionMonthList() {
         List<String> list = new ArrayList<>();
