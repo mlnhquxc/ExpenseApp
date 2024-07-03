@@ -3,6 +3,7 @@ package com.example.projectmobileapp.fragment;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -104,6 +105,20 @@ public class IndexReport extends Fragment {
                 }
                 break;
         }
+
+        double thunhapSo = 0, chitieuSo = 0, tongcongSo =0;
+        for (ListTransaction listTransaction: list){
+            thunhapSo +=listTransaction.getInconme();
+            chitieuSo +=listTransaction.getExpense();
+            tongcongSo +=listTransaction.getTotal();
+        }
+        thunhap.setText(String.valueOf(thunhapSo));
+        chitieu.setText("-"+String.valueOf(chitieuSo));
+        if (thunhapSo>chitieuSo){
+            tongcong.setTextColor(Color.parseColor("#4CAF50"));
+        }
+        tongcong.setText(String.valueOf(tongcongSo));
+
 
 
         statisticalListDateAdapter = new StatisticalListDateAdapter(list);

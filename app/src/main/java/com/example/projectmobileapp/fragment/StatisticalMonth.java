@@ -18,6 +18,7 @@ import com.example.projectmobileapp.R;
 import com.example.projectmobileapp.adapter.StatisticalListDateAdapter;
 import com.example.projectmobileapp.model.ListTransaction;
 import com.example.projectmobileapp.model.ListTransactionByDay;
+import com.example.projectmobileapp.model.ListTransactionByMonth;
 import com.example.projectmobileapp.model.Transactions;
 
 import java.util.ArrayList;
@@ -45,14 +46,13 @@ public class StatisticalMonth extends Fragment {
         databaseHelper = new DatabaseHelper(getActivity());
         String username = sharedPreferences.getString("currentUsername", "");
         List<ListTransaction> list = new ArrayList<>();
-        for (String dateText:databaseHelper.getTransactionDayList(username)) {
+        for (String dateText:databaseHelper.getTransactionMonthList(username)) {
             String[] dateParts = dateText.split("-");
-            int year = Integer.parseInt(dateParts[0]);
-            int month = Integer.parseInt(dateParts[1]);
-            int day = Integer.parseInt(dateParts[2]);
-            List<Transactions> listTransaction = databaseHelper.getTransactionListByDay(username,day,month,year);
-            ListTransactionByDay listTransactionByDay = new ListTransactionByDay(day,month,year,listTransaction);
-            list.add(listTransactionByDay);
+            int year = Integer.parseInt(dateParts[1]);
+            int month = Integer.parseInt(dateParts[0]);
+            List<Transactions> listTransaction = databaseHelper.getTransactionListByMonth(username,month,year);
+            ListTransactionByMonth listTransactionByMonth = new ListTransactionByMonth(month,year,listTransaction);
+            list.add(listTransactionByMonth);
 
         }
 

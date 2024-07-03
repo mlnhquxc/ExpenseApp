@@ -11,6 +11,10 @@ public class TransactionGroups {
         this.transactionType = transactionType;
     }
 
+
+    public TransactionGroups() {
+    }
+
     public int getGroupID() {
         return GroupID;
     }

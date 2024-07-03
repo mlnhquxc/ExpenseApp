@@ -25,6 +25,7 @@ import com.example.projectmobileapp.AddTransaction;
 import com.example.projectmobileapp.DatabaseHelper;
 import com.example.projectmobileapp.R;
 import com.example.projectmobileapp.model.TransactionGroups;
+import com.example.projectmobileapp.model.User;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,6 +54,7 @@ public class AddTransactionGroup extends Fragment {
         this.isexpenses = isexpenses;
         this.isEdit = false;
     }
+    List<TransactionGroups> transactionGroupsList;
 
     @SuppressLint("ResourceType")
     public AddTransactionGroup(int idtransaction) {
@@ -77,14 +79,17 @@ public class AddTransactionGroup extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences("UserData", Context.MODE_PRIVATE);
         databaseHelper = new DatabaseHelper(getActivity());
         List<String> spinnerItems = new ArrayList<>();
+        transactionGroupsList = new ArrayList<>();
         if (isexpenses){
+            transactionGroupsList = databaseHelper.getTransactionGroupsExpenseList();
             transactionType = "Expense";
-            for (TransactionGroups transactionGroups: databaseHelper.getTransactionGroupsExpenseList()) {
+            for (TransactionGroups transactionGroups: transactionGroupsList) {
                 spinnerItems.add(transactionGroups.getGroupName());
             }
         }else{
+            transactionGroupsList = databaseHelper.getTransactionGroupsIncomeList();
             transactionType = "Income";
-            for (TransactionGroups transactionGroups: databaseHelper.getTransactionGroupsIncomeList()) {
+            for (TransactionGroups transactionGroups: transactionGroupsList) {
                 spinnerItems.add(transactionGroups.getGroupName());
             }
         }
@@ -110,7 +115,14 @@ public class AddTransactionGroup extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // Xử lý khi một mục được chọn
-//                selectedTransactiongroup = parentView.getItemAtPosition(position).toString();
+
+                String itemText = parentView.getItemAtPosition(position).toString();
+                for (TransactionGroups tg:transactionGroupsList) {
+                    if (tg.getGroupName().equals(itemText)){
+                        selectedTransactiongroup = tg.getGroupID();
+                        break;
+                    }
+                }
 //                Toast.makeText(getContext(), "Selected: " + selectedTransactiongroup, Toast.LENGTH_SHORT).show();
             }
 
@@ -130,11 +142,11 @@ public class AddTransactionGroup extends Fragment {
                     @Override
                     public void onDateSet(DatePicker view, int yearpick, int monthpick, int daypick) {
                         year = yearpick;
-                        month = monthpick;
+                        month = monthpick+1;
                         day = daypick;
                         setDate();
                     }
-                }, year,month,day);
+                }, year,month-1,day);
                 datePickerDialog.show();
             }
         });
@@ -162,7 +174,14 @@ public class AddTransactionGroup extends Fragment {
                     Toast.makeText(getContext(), "Vui lòng nhập số tiền", Toast.LENGTH_SHORT).show();
                 }else{
                     amount = Double.parseDouble(amountText);
-
+                    User user = databaseHelper.getUser(username);
+                    double balance = user.getCash();
+                    if (transactionType.equals("Expense")){
+                        balance -= amount;
+                    }else {
+                        balance += amount;
+                    }
+                    databaseHelper.updateUserBalance(username,balance);
                     databaseHelper.addTransaction(username,transactionType,selectedTransactiongroup,amount,notes,day,month,year);
                     Toast.makeText(getContext(), "Thêm giao dịch thành công", Toast.LENGTH_SHORT).show();
                     getActivity().finish();

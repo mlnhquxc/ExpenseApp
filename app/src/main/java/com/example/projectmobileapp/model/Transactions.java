@@ -4,14 +4,17 @@ public class Transactions {
 
     int TransactionID;
     String Username;
+    String TransactionType;
     int GroupID;
     double Amount;
     String Notes;
     int day,month,year;
 
-    public Transactions(int transactionID, String username, int groupID, double amount, String notes, int day, int month, int year) {
+
+    public Transactions(int transactionID, String username, String transactionType, int groupID, double amount, String notes, int day, int month, int year) {
         TransactionID = transactionID;
         Username = username;
+        TransactionType = transactionType;
         GroupID = groupID;
         Amount = amount;
         Notes = notes;
@@ -82,5 +85,13 @@ public class Transactions {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public String getTransactionType() {
+        return TransactionType;
+    }
+
+    public void setTransactionType(String transactionType) {
+        TransactionType = transactionType;
     }
 }

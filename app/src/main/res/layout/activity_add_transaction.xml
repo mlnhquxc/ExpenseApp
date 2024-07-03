@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddTransaction">
+    tools:context=".AddTransaction"
+    android:padding="16dp">
 
     <ScrollView
         android:layout_width="match_parent"

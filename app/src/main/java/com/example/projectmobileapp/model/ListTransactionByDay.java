@@ -55,5 +55,35 @@ public class ListTransactionByDay implements ListTransaction{
     public List<Transactions> getListTransaction() {
         return list;
     }
+
+    @Override
+    public double getInconme() {
+        double result =0.0;
+        for (Transactions tr: list) {
+            if (tr.getTransactionType().equals("Income"))
+            {
+                result += tr.getAmount();
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public double getExpense() {
+        double result =0.0;
+        for (Transactions tr: list) {
+            if (tr.getTransactionType().equals("Expense"))
+            {
+                result += tr.getAmount();
+            }
+        }
+        return result;
+    }
+
+
+    @Override
+    public double getTotal() {
+        return getInconme()-getExpense();
+    }
 }
 

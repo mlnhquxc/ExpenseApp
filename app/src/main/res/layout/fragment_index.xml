@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".fragment.Index">
+    tools:context=".fragment.HomeFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,7 +34,6 @@
                 android:layout_weight="1"
                 android:text="100.000 Đồng"
                 android:textAlignment="viewEnd"
-                android:textColor="#15DD0D"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -46,12 +45,6 @@
                 android:background="@drawable/view" />
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/add"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Thêm giao dịch" />
 
         <LinearLayout
             android:layout_width="match_parent"

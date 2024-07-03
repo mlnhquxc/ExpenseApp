@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.example.projectmobileapp.model.TransactionGroups;
 import com.example.projectmobileapp.model.Transactions;
+import com.example.projectmobileapp.model.User;
 
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -241,6 +242,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 int transactionID = cursor.getInt(cursor.getColumnIndexOrThrow("TransactionID"));
                 String username = cursor.getString(cursor.getColumnIndexOrThrow("Username"));
+                String transactionType = cursor.getString(cursor.getColumnIndexOrThrow("TransactionType"));
                 int GroupID = cursor.getInt(cursor.getColumnIndexOrThrow("GroupID"));
                 Double amount = cursor.getDouble(cursor.getColumnIndexOrThrow("Amount"));
                 String note = cursor.getString(cursor.getColumnIndexOrThrow("Notes"));
@@ -250,7 +252,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 int month = Integer.parseInt(dateParts[1]);
                 int day = Integer.parseInt(dateParts[2]);
 
-                Transactions transactions = new Transactions(transactionID, username, GroupID, amount, note, day, month, year);
+                Transactions transactions = new Transactions(transactionID, username, transactionType, GroupID, amount, note, day, month, year);
                 list.add(transactions);
 
             } while (cursor.moveToNext());
@@ -268,7 +270,54 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 String dateStr = cursor.getString(cursor.getColumnIndexOrThrow("TransactionDate"));
-                list.add(dateStr);
+                if (!list.contains(dateStr)){
+                    list.add(dateStr);
+                }
+
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public List<String> getTransactionMonthList(String username) {
+        List<String> list = new ArrayList<>();
+        SQLiteDatabase myDB = this.getWritableDatabase();
+
+        Cursor cursor = myDB.rawQuery("select TransactionDate from Transactions where Username = ? ORDER BY TransactionDate DESC", new String[]{username});
+        if (cursor.moveToFirst()) {
+            do {
+                String dateStr = cursor.getString(cursor.getColumnIndexOrThrow("TransactionDate"));
+                String[] dateParts = dateStr.split("-");
+                int year = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]);
+                String dateText = month+"-"+year;
+                if (!list.contains(dateText)){
+                    list.add(dateText);
+                }
+
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public List<Integer> getTransactionYearList(String username) {
+        List<Integer> list = new ArrayList<>();
+        SQLiteDatabase myDB = this.getWritableDatabase();
+
+        Cursor cursor = myDB.rawQuery("select TransactionDate from Transactions where Username = ? ORDER BY TransactionDate DESC", new String[]{username});
+        if (cursor.moveToFirst()) {
+            do {
+                String dateStr = cursor.getString(cursor.getColumnIndexOrThrow("TransactionDate"));
+                String[] dateParts = dateStr.split("-");
+                int year = Integer.parseInt(dateParts[0]);
+                if (!list.contains(year)){
+                    list.add(year);
+                }
+
 
             } while (cursor.moveToNext());
         }
@@ -310,7 +359,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 String dateStr = cursor.getString(cursor.getColumnIndexOrThrow("TransactionDate"));
-                list.add(dateStr);
+                if (!list.contains(dateStr)){
+                    list.add(dateStr);
+                }
 
             } while (cursor.moveToNext());
         }
@@ -342,7 +393,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 String dateStr = cursor.getString(cursor.getColumnIndexOrThrow("TransactionDate"));
-                list.add(dateStr);
+                if (!list.contains(dateStr)){
+                    list.add(dateStr);
+                }
 
             } while (cursor.moveToNext());
         }
@@ -354,24 +407,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<String> list = new ArrayList<>();
         SQLiteDatabase myDB = this.getWritableDatabase();
         Calendar calendar = Calendar.getInstance();
-        int yearS,monthS, dayS;
-        int yearE = calendar.get(Calendar.YEAR);
-        int monthE = calendar.get(Calendar.MONTH)+1;
-        int dayE = calendar.get(Calendar.DAY_OF_WEEK)-1;
-        dayS = dayE;
-        yearS = yearE-1;
-        monthS = monthE;
 
+        int yearE = calendar.get(Calendar.YEAR);
+        int monthE = calendar.get(Calendar.MONTH) + 1;
+        int dayE = calendar.get(Calendar.DAY_OF_MONTH)-1;
+
+        int yearS = yearE - 1;
+        int monthS = monthE;
+        int dayS = dayE;
 
         String dateS = formatDate(dayS, monthS, yearS);
         String dateE = formatDate(dayE, monthE, yearE);
-
 
         Cursor cursor = myDB.rawQuery("select TransactionDate from Transactions where Username = ? AND TransactionDate Between ? And ? ORDER BY TransactionDate DESC", new String[]{username,dateS,dateE});
         if (cursor.moveToFirst()) {
             do {
                 String dateStr = cursor.getString(cursor.getColumnIndexOrThrow("TransactionDate"));
-                list.add(dateStr);
+                if (!list.contains(dateStr)){
+                    list.add(dateStr);
+                }
 
             } while (cursor.moveToNext());
         }
@@ -434,6 +488,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 int transactionID = cursor.getInt(cursor.getColumnIndexOrThrow("TransactionID"));
                 String us = cursor.getString(cursor.getColumnIndexOrThrow("Username"));
+                String transactionType = cursor.getString(cursor.getColumnIndexOrThrow("TransactionType"));
                 int GroupID = cursor.getInt(cursor.getColumnIndexOrThrow("GroupID"));
                 Double amount = cursor.getDouble(cursor.getColumnIndexOrThrow("Amount"));
                 String note = cursor.getString(cursor.getColumnIndexOrThrow("Notes"));
@@ -443,7 +498,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 int month = Integer.parseInt(dateParts[1]);
                 int day = Integer.parseInt(dateParts[2]);
 
-                Transactions transactions = new Transactions(transactionID,us,GroupID,amount,note,day,month,year);
+                Transactions transactions = new Transactions(transactionID,us, transactionType,GroupID,amount,note,day,month,year);
                 list.add(transactions);
 
             } while (cursor.moveToNext());
@@ -452,8 +507,92 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    public List<Transactions> getTransactionListByMonth(String username, int m, int y){
+        List<Transactions> list = new ArrayList<>();
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        String monthText = String.format("%02d", m);
+        String yearText = String.valueOf(y);
+        String query = "SELECT * FROM Transactions WHERE Username = ? AND strftime('%m', TransactionDate) = ? AND strftime('%Y', TransactionDate) = ? ORDER BY TransactionDate DESC";
+        Cursor cursor = myDB.rawQuery(query, new String[]{username, monthText, yearText});
+        if (cursor.moveToFirst()) {
+            do {
+                int transactionID = cursor.getInt(cursor.getColumnIndexOrThrow("TransactionID"));
+                String us = cursor.getString(cursor.getColumnIndexOrThrow("Username"));
+                String transactionType = cursor.getString(cursor.getColumnIndexOrThrow("TransactionType"));
+                int GroupID = cursor.getInt(cursor.getColumnIndexOrThrow("GroupID"));
+                Double amount = cursor.getDouble(cursor.getColumnIndexOrThrow("Amount"));
+                String note = cursor.getString(cursor.getColumnIndexOrThrow("Notes"));
+                String dateStr = cursor.getString(cursor.getColumnIndexOrThrow("TransactionDate"));
+                String[] dateParts = dateStr.split("-");
+                int year = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]);
+                int day = Integer.parseInt(dateParts[2]);
+
+                Transactions transactions = new Transactions(transactionID,us, transactionType,GroupID,amount,note,day,month,year);
+                list.add(transactions);
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public List<Transactions> getTransactionListByYear(String username,int y){
+        List<Transactions> list = new ArrayList<>();
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        String yearText = String.valueOf(y);
+        String query = "SELECT * FROM Transactions WHERE Username = ? AND strftime('%Y', TransactionDate) = ? ORDER BY TransactionDate DESC";
+        Cursor cursor = myDB.rawQuery(query, new String[]{username, yearText});
+        if (cursor.moveToFirst()) {
+            do {
+                int transactionID = cursor.getInt(cursor.getColumnIndexOrThrow("TransactionID"));
+                String us = cursor.getString(cursor.getColumnIndexOrThrow("Username"));
+                String transactionType = cursor.getString(cursor.getColumnIndexOrThrow("TransactionType"));
+                int GroupID = cursor.getInt(cursor.getColumnIndexOrThrow("GroupID"));
+                Double amount = cursor.getDouble(cursor.getColumnIndexOrThrow("Amount"));
+                String note = cursor.getString(cursor.getColumnIndexOrThrow("Notes"));
+                String dateStr = cursor.getString(cursor.getColumnIndexOrThrow("TransactionDate"));
+                String[] dateParts = dateStr.split("-");
+                int year = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]);
+                int day = Integer.parseInt(dateParts[2]);
+
+                Transactions transactions = new Transactions(transactionID,us, transactionType,GroupID,amount,note,day,month,year);
+                list.add(transactions);
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
+    public User getUser(String username) {
+
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        Cursor cursor = myDB.rawQuery("select * from users where username = ?", new String[]{username});
+        if (cursor.moveToFirst()) {
+            String us = cursor.getString(cursor.getColumnIndexOrThrow("Username"));
+            String password = cursor.getString(cursor.getColumnIndexOrThrow("Password"));
+            String email = cursor.getString(cursor.getColumnIndexOrThrow("Email"));
+            double balance = cursor.getInt(cursor.getColumnIndexOrThrow("Balance"));
+
+            User user = new User(email,password,username,balance);
+            return user;
+        }
+        cursor.close();
+        return null;
+    }
+
+    public boolean updateUserBalance(String username, double balance) {
+        SQLiteDatabase myDB = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("Balance", balance);
+        int result = myDB.update("Users", contentValues, "username = ?", new String[]{username});
+        return result > 0;
+    }
+
     // Phương thức định dạng ngày
     private String formatDate(int day, int month, int year) {
-        return String.format(Locale.US, "%04d-%02d-%02d", year, month, day);
+        return String.format("%04d-%02d-%02d", year, month, day);
     }
 }

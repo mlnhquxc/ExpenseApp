@@ -3,14 +3,14 @@ package com.example.projectmobileapp.model;
 public class User {
     private String email;
     private String password;
-    private String name;
-    private int cash;
+    private String username;
+    private double Balance;
 
-    public User(String email, String password, String name, int cash) {
+    public User(String email, String password, String username, double Balance) {
         this.email = email;
         this.password = password;
-        this.name = name;
-        this.cash = cash;
+        this.username = username;
+        this.Balance = Balance;
     }
 
     public String getEmail() {
@@ -30,18 +30,18 @@ public class User {
     }
 
     public String getName() {
-        return name;
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String username) {
+        this.username = username;
     }
 
-    public int getCash() {
-        return cash;
+    public double getCash() {
+        return Balance;
     }
 
-    public void setCash(int cash) {
-        this.cash = cash;
+    public void setCash(double Balance) {
+        this.Balance = Balance;
     }
 }

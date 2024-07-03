@@ -1,6 +1,9 @@
 package com.example.projectmobileapp.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,9 +16,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.projectmobileapp.AddTransaction;
+import com.example.projectmobileapp.DatabaseHelper;
 import com.example.projectmobileapp.MainActivity;
 import com.example.projectmobileapp.R;
 import com.example.projectmobileapp.adapter.IndexReportAdapter;
+import com.example.projectmobileapp.model.User;
 import com.google.android.material.tabs.TabLayout;
 
 
@@ -27,6 +32,8 @@ public class HomeFragment extends Fragment {
     TabLayout reportTabLayout;
     ViewPager2 reportViewPaper2;
     IndexReportAdapter indexReportAdapter;
+    DatabaseHelper databaseHelper;
+    SharedPreferences sharedPreferences;
 
 
     @Override
@@ -37,11 +44,19 @@ public class HomeFragment extends Fragment {
         viewMoney = view.findViewById(R.id.main_view_money);
 
         reportTabLayout = view.findViewById(R.id.main_report_tablayout);
-        Button add = view.findViewById(R.id.add);
         reportViewPaper2 = view.findViewById(R.id.main_report_viewpaper2);
         indexReportAdapter = new IndexReportAdapter(getActivity());
         reportViewPaper2.setAdapter(indexReportAdapter);
-
+        sharedPreferences = getActivity().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        databaseHelper = new DatabaseHelper(getActivity());
+        String username = sharedPreferences.getString("currentUsername", "");
+        User user = databaseHelper.getUser(username);
+        money.setText(String.valueOf(user.getCash())+" Đồng");
+        if (user.getCash()<0){
+            money.setTextColor(Color.parseColor("#F44336"));
+        }else{
+            money.setTextColor(Color.parseColor("#4CAF50"));
+        }
         reportTabLayout.addOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -77,26 +92,24 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (viewMoneyAllow){
-                    money.setText("******");
+                    money.setText("***********");
                     viewMoney.setBackgroundResource(R.drawable.hide);
                     viewMoneyAllow = false;
+                    money.setTextColor(Color.BLACK);
                 }else {
-                    money.setText("200.000 Đồng");
+                    money.setText(String.valueOf(user.getCash())+" Đồng");
                     viewMoney.setBackgroundResource(R.drawable.view);
                     viewMoneyAllow = true;
+                    if (user.getCash()<0){
+                        money.setTextColor(Color.parseColor("#F44336"));
+                    }else{
+                        money.setTextColor(Color.parseColor("#4CAF50"));
+                    }
                 }
 
 
             }
         });
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddTransaction.class);
-                startActivity(intent);
-            }
-        });
-        
 
 
         return view;

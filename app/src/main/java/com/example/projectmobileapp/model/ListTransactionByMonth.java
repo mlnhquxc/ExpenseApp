@@ -46,4 +46,19 @@ public class ListTransactionByMonth implements ListTransaction{
     public List<Transactions> getListTransaction() {
         return list;
     }
+
+    @Override
+    public double getInconme() {
+        return 0;
+    }
+
+    @Override
+    public double getExpense() {
+        return 0;
+    }
+
+    @Override
+    public double getTotal() {
+        return 0;
+    }
 }

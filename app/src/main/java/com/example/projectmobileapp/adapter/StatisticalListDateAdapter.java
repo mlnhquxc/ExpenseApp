@@ -33,6 +33,7 @@ public class StatisticalListDateAdapter extends RecyclerView.Adapter<Statistical
         ListTransaction listTransaction = list.get(position);
         holder.date.setText(listTransaction.getTextDate());
         holder.listbills.setLayoutManager(new LinearLayoutManager(holder.listbills.getContext(), LinearLayoutManager.VERTICAL, false));
+        holder.listbills.setNestedScrollingEnabled(false);
         StatisticalListBillAdapter statisticalListBillAdapter = new StatisticalListBillAdapter(listTransaction.getListTransaction());
         holder.listbills.setAdapter(statisticalListBillAdapter);
     }
