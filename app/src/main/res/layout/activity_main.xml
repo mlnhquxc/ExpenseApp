@@ -11,13 +11,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
-        <FrameLayout
-            android:id="@+id/fragment_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/bottom_nav_bar">
 
-        </FrameLayout>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </FrameLayout>
+        </ScrollView>
 
         <LinearLayout
             android:id="@+id/bottom_nav_bar"

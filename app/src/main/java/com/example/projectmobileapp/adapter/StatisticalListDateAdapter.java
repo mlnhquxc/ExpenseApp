@@ -10,14 +10,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projectmobileapp.R;
-import com.example.projectmobileapp.model.ListBill;
+import com.example.projectmobileapp.model.ListTransaction;
 
 import java.util.List;
 
 public class StatisticalListDateAdapter extends RecyclerView.Adapter<StatisticalListDateAdapter.StatisticalListDateViewHolder> {
-    List<ListBill> list;
+    List<ListTransaction> list;
 
-    public StatisticalListDateAdapter(List<ListBill> list) {
+    public StatisticalListDateAdapter(List<ListTransaction> list) {
         this.list = list;
     }
 
@@ -30,10 +30,10 @@ public class StatisticalListDateAdapter extends RecyclerView.Adapter<Statistical
 
     @Override
     public void onBindViewHolder(@NonNull StatisticalListDateViewHolder holder, int position) {
-        ListBill listBill = list.get(position);
-        holder.date.setText(listBill.getTextDate());
+        ListTransaction listTransaction = list.get(position);
+        holder.date.setText(listTransaction.getTextDate());
         holder.listbills.setLayoutManager(new LinearLayoutManager(holder.listbills.getContext(), LinearLayoutManager.VERTICAL, false));
-        StatisticalListBillAdapter statisticalListBillAdapter = new StatisticalListBillAdapter(listBill.getListBill());
+        StatisticalListBillAdapter statisticalListBillAdapter = new StatisticalListBillAdapter(listTransaction.getListTransaction());
         holder.listbills.setAdapter(statisticalListBillAdapter);
     }
 

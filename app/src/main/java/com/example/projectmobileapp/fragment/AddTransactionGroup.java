@@ -2,6 +2,8 @@ package com.example.projectmobileapp.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -20,7 +22,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.projectmobileapp.AddTransaction;
+import com.example.projectmobileapp.DatabaseHelper;
 import com.example.projectmobileapp.R;
+import com.example.projectmobileapp.model.TransactionGroups;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,7 +34,7 @@ public class AddTransactionGroup extends Fragment {
     Boolean isexpenses;
     Boolean isEdit;
     Spinner transactionGroup;
-    String selectedTransactiongroup;
+    int selectedTransactiongroup;
 
     EditText money;
 
@@ -40,6 +44,10 @@ public class AddTransactionGroup extends Fragment {
     int year;
     MultiAutoCompleteTextView note;
     Button add,exit;
+
+    SharedPreferences sharedPreferences;
+    DatabaseHelper databaseHelper;
+    String transactionType = "";
 
     public AddTransactionGroup(Boolean isexpenses) {
         this.isexpenses = isexpenses;
@@ -66,6 +74,20 @@ public class AddTransactionGroup extends Fragment {
         note = view.findViewById(R.id.note);
         add = view.findViewById(R.id.addtransaction);
         exit = view.findViewById(R.id.exit);
+        sharedPreferences = getActivity().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        databaseHelper = new DatabaseHelper(getActivity());
+        List<String> spinnerItems = new ArrayList<>();
+        if (isexpenses){
+            transactionType = "Expense";
+            for (TransactionGroups transactionGroups: databaseHelper.getTransactionGroupsExpenseList()) {
+                spinnerItems.add(transactionGroups.getGroupName());
+            }
+        }else{
+            transactionType = "Income";
+            for (TransactionGroups transactionGroups: databaseHelper.getTransactionGroupsIncomeList()) {
+                spinnerItems.add(transactionGroups.getGroupName());
+            }
+        }
 
         Calendar calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);
@@ -77,11 +99,8 @@ public class AddTransactionGroup extends Fragment {
             money.setText( String.valueOf(200000));
         }
 
-        List<String> spinnerItems = new ArrayList<>();
-        spinnerItems.add("Item 1");
-        spinnerItems.add("Item 2");
-        spinnerItems.add("Item 3");
-        spinnerItems.add("Item 4");
+
+
 
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, spinnerItems);
@@ -91,7 +110,7 @@ public class AddTransactionGroup extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // Xử lý khi một mục được chọn
-                selectedTransactiongroup = parentView.getItemAtPosition(position).toString();
+//                selectedTransactiongroup = parentView.getItemAtPosition(position).toString();
 //                Toast.makeText(getContext(), "Selected: " + selectedTransactiongroup, Toast.LENGTH_SHORT).show();
             }
 
@@ -131,14 +150,33 @@ public class AddTransactionGroup extends Fragment {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String username,notes, amountText;
+                double  groupID, amount;
+                username = sharedPreferences.getString("currentUsername", "");
+                notes = note.getText().toString();
+                groupID = selectedTransactiongroup;
+                amountText = money.getText().toString();
 
-                Toast.makeText(getContext(), "Thêm giao dịch thành công", Toast.LENGTH_SHORT).show();
-                getActivity().finish();
+
+                if (amountText.equals("")){
+                    Toast.makeText(getContext(), "Vui lòng nhập số tiền", Toast.LENGTH_SHORT).show();
+                }else{
+                    amount = Double.parseDouble(amountText);
+
+                    databaseHelper.addTransaction(username,transactionType,selectedTransactiongroup,amount,notes,day,month,year);
+                    Toast.makeText(getContext(), "Thêm giao dịch thành công", Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
+                }
+
+
+
             }
         });
 
         return view;
     }
+
+
 
     public void setDate(){
         pickDate.setText("Ngày "+ day +", tháng " + month +" năm " + year);

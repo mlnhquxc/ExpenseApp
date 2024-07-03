@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +21,9 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountFragment extends Fragment {
     LinearLayout lnAccountManager;
@@ -27,6 +33,11 @@ public class AccountFragment extends Fragment {
     DatabaseHelper databaseHelper;
     Button btn_save, btn_cancel;
     EditText etGroupName;
+
+    //phước thêm
+    Spinner spTransactionType;
+    String selectedTransactionType = "";
+    //
 
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
@@ -64,6 +75,38 @@ public class AccountFragment extends Fragment {
         btn_save = dialogView.findViewById(R.id.btn_saveGroup);
         btn_cancel = dialogView.findViewById(R.id.btn_cancelGroup);
 
+        //phước thêm
+
+        spTransactionType = dialogView.findViewById(R.id.sp_transaction_type);
+        List<String> spinnerItems = new ArrayList<>();
+        spinnerItems.add("Chi tiêu");
+        spinnerItems.add("Thu nhập");
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, spinnerItems);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spTransactionType.setAdapter(adapter);
+
+        spTransactionType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // Xử lý khi một mục được chọn
+                String itemtext = spinnerItems.get(position);
+                if (itemtext.equals("Chi tiêu")){
+                    selectedTransactionType = "Expense";
+                }else{
+                    selectedTransactionType = "Income";
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Xử lý khi không có mục nào được chọn
+            }
+        });
+
+        //phước thêm
+
+
+
         AlertDialog alertDialog = builder.create();
 
         btn_save.setOnClickListener(v -> {
@@ -72,7 +115,7 @@ public class AccountFragment extends Fragment {
                 if (databaseHelper.isGroupExists(groupName)) {
                     Toast.makeText(requireContext(), "Nhóm giao dịch này đã tồn tại", Toast.LENGTH_LONG).show();
                 } else {
-                    boolean isAdded = databaseHelper.addTransactionGroup(groupName);
+                    boolean isAdded = databaseHelper.addTransactionGroup(groupName,selectedTransactionType);
                     if (isAdded) {
                         Toast.makeText(requireContext(), "Thêm nhóm giao dịch thành công", Toast.LENGTH_LONG).show();
                     } else {

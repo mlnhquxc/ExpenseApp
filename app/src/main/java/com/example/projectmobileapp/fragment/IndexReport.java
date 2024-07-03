@@ -1,6 +1,8 @@
 package com.example.projectmobileapp.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,11 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.projectmobileapp.DatabaseHelper;
 import com.example.projectmobileapp.R;
 import com.example.projectmobileapp.adapter.StatisticalListDateAdapter;
-import com.example.projectmobileapp.model.Bill;
-import com.example.projectmobileapp.model.ListBill;
-import com.example.projectmobileapp.model.ListBillDay;
+import com.example.projectmobileapp.model.ListTransaction;
+import com.example.projectmobileapp.model.ListTransactionByDay;
+import com.example.projectmobileapp.model.Transactions;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,6 +32,8 @@ public class IndexReport extends Fragment {
     RecyclerView listbill;
     int date;
     StatisticalListDateAdapter statisticalListDateAdapter;
+    SharedPreferences sharedPreferences;
+    DatabaseHelper databaseHelper;
 
     public IndexReport(int date) {
         this.date = date;
@@ -42,69 +47,41 @@ public class IndexReport extends Fragment {
         thunhap = view.findViewById(R.id.index_reprot_income);
         chitieu = view.findViewById(R.id.index_reprot_expenses);
         tongcong = view.findViewById(R.id.index_reprot_total);
+        sharedPreferences = getActivity().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        databaseHelper = new DatabaseHelper(getActivity());
 
         listbill = view.findViewById(R.id.index_report_listbill);
         listbill.setLayoutManager(new LinearLayoutManager(getActivity()));
         listbill.setNestedScrollingEnabled(false);
 
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.set(2024, Calendar.JUNE, 25); // Ngày 25/06/2024
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(2024, Calendar.JUNE, 26); // Ngày 26/06/2024
-        Calendar calendar3 = Calendar.getInstance();
-        calendar3.set(2024, Calendar.JUNE, 27); // Ngày 27/06/2024
+        List<ListTransaction> list= new ArrayList<>();
+        String username = sharedPreferences.getString("currentUsername", "");
+//        switch (date) {
+//            case 0:
+//
+//                break;
+//            case 1:
+//
+//                break;
+//            case 2:
+//
+//                break;
+//            default:
+//
+//                break;
+//        }
+        for (String dateText:databaseHelper.getTransactionDayList(username)) {
+            String[] dateParts = dateText.split("-");
+            int year = Integer.parseInt(dateParts[0]);
+            int month = Integer.parseInt(dateParts[1]);
+            int day = Integer.parseInt(dateParts[2]);
+            List<Transactions> listTransaction = databaseHelper.getTransactionListByDay(username,day,month,year);
+            ListTransactionByDay listTransactionByDay = new ListTransactionByDay(day,month,year,listTransaction);
+            list.add(listTransactionByDay);
 
-        // Tạo các đối tượng Bill
-        Bill bill1 = new Bill(1, "abc", 1, 20000, calendar1.getTime(), "");
-        Bill bill2 = new Bill(2, "def", 1, 30000, calendar2.getTime(), "");
-        Bill bill3 = new Bill(3, "ghi", 1, 40000, calendar3.getTime(), "");
-
-        List<Bill> bills1 = new ArrayList<>();
-        List<Bill> bills2 = new ArrayList<>();
-        List<Bill> bills3 = new ArrayList<>();
-        List<Bill> bills4 = new ArrayList<>();
-        bills1.add(bill1);
-        bills1.add(bill2);
-        bills2.add(bill1);
-        bills2.add(bill3);
-        bills3.add(bill2);
-        bills3.add(bill3);
-        bills4.add(bill1);
-        bills4.add(bill1);
-        bills4.add(bill3);
-
-        ListBill listBill1 = new ListBillDay(1,1,1,bills1);
-        ListBill listBill2 = new ListBillDay(2,1,1,bills2);
-        ListBill listBill3 = new ListBillDay(3,1,1,bills3);
-        ListBill listBill4 = new ListBillDay(4,1,1,bills4);
-
-        List<ListBill> list2 = new ArrayList<>();
-        List<ListBill> list3 = new ArrayList<>();
-        List<ListBill> list4 = new ArrayList<>();
-        list2.add(listBill1);
-        list2.add(listBill2);
-        list3.add(listBill3);
-        list3.add(listBill4);
-        list3.add(listBill4);
-        list4.add(listBill4);
-        list4.add(listBill4);
-        list4.add(listBill4);
-        list4.add(listBill4);
-
-        switch (date) {
-            case 0:
-                statisticalListDateAdapter = new StatisticalListDateAdapter(list2);
-                break;
-            case 1:
-                statisticalListDateAdapter = new StatisticalListDateAdapter(list3);
-                break;
-            case 2:
-                statisticalListDateAdapter = new StatisticalListDateAdapter(list4);
-                break;
-            default:
-                statisticalListDateAdapter = new StatisticalListDateAdapter(list4);
-                break;
         }
+
+        statisticalListDateAdapter = new StatisticalListDateAdapter(list);
 
         listbill.setAdapter(statisticalListDateAdapter);
 

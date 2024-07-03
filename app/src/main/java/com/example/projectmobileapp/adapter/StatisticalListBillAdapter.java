@@ -10,15 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projectmobileapp.R;
-import com.example.projectmobileapp.model.Bill;
+import com.example.projectmobileapp.model.Transactions;
 
 import java.util.List;
 
 public class StatisticalListBillAdapter extends RecyclerView.Adapter<StatisticalListBillAdapter.StatisticalListBillViewHolder> {
-    List<Bill> billList;
+    List<Transactions> Listtransactions;
 
-    public StatisticalListBillAdapter(List<Bill> billList) {
-        this.billList = billList;
+    public StatisticalListBillAdapter(List<Transactions> Listtransactions) {
+        this.Listtransactions = Listtransactions;
     }
 
     @NonNull
@@ -30,15 +30,15 @@ public class StatisticalListBillAdapter extends RecyclerView.Adapter<Statistical
 
     @Override
     public void onBindViewHolder(@NonNull StatisticalListBillViewHolder holder, int position) {
-        Bill bill = billList.get(position);
+        Transactions transactions = Listtransactions.get(position);
         holder.detailBillName.setText("Đồ ăn");
-        holder.detailBillName.setText(String.valueOf(bill.getMoney()));
+        holder.detailBillName.setText(String.valueOf(transactions.getAmount()));
 
     }
 
     @Override
     public int getItemCount() {
-        return billList.size();
+        return Listtransactions.size();
     }
 
 
